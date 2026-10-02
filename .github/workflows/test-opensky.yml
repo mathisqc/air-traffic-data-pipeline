@@ -1,0 +1,27 @@
+name: Test OpenSky Connection
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-opensky:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Test OpenSky
+        run: |
+          python - <<'PY'
+          import urllib.request
+
+          url = "https://opensky-network.org/api/states/all"
+
+          print("Connexion à OpenSky...")
+
+          try:
+              with urllib.request.urlopen(url, timeout=20) as response:
+                  print("HTTP status:", response.status)
+                  print("OpenSky accessible depuis GitHub Actions !")
+          except Exception as e:
+              print("ERREUR:", repr(e))
+              raise
+          PY
