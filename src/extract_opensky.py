@@ -1,3 +1,4 @@
+import os
 import requests
 import pandas as pd
 import boto3
@@ -6,13 +7,47 @@ from datetime import datetime, timezone
 from clean_opensky import clean_opensky_data
 
 
-# URL API OpenSky
+# --------------------------------------------------
+# AUTHENTIFICATION OPENSKY
+# --------------------------------------------------
+
+client_id = os.environ["OPENSKY_CLIENT_ID"]
+client_secret = os.environ["OPENSKY_CLIENT_SECRET"]
+
+token_url = (
+    "https://auth.opensky-network.org/auth/realms/"
+    "opensky-network/protocol/openid-connect/token"
+)
+
+token_response = requests.post(
+    token_url,
+    data={
+        "grant_type": "client_credentials",
+        "client_id": client_id,
+        "client_secret": client_secret
+    },
+    timeout=20
+)
+
+token_response.raise_for_status()
+access_token = token_response.json()["access_token"]
+
+
+# --------------------------------------------------
+# APPEL API OPENSKY
+# --------------------------------------------------
+
 url = "https://opensky-network.org/api/states/all"
 
-# Appel API
-response = requests.get(url)
-response.raise_for_status()
+response = requests.get(
+    url,
+    headers={
+        "Authorization": f"Bearer {access_token}"
+    },
+    timeout=20
+)
 
+response.raise_for_status()
 data = response.json()
 
 # Heure de récupération de ce snapshot
@@ -60,8 +95,7 @@ print("Nombre d'observations CLEAN :", len(df_clean))
 # ENVOI DES DONNÉES NETTOYÉES DANS AWS S3
 # --------------------------------------------------
 
-session = boto3.Session(profile_name="air-traffic-pipeline")
-s3 = session.client("s3", region_name="eu-west-3")
+s3 = boto3.client("s3", region_name="eu-west-3")
 
 bucket_name = "air-traffic-data-988277498718-eu-west-3-an"
 
