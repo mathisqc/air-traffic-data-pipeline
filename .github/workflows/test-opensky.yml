@@ -1,27 +1,29 @@
-name: Test OpenSky Connection
+name: Run Air Traffic Pipeline
 
 on:
   workflow_dispatch:
 
 jobs:
-  test-opensky:
+  run-pipeline:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Test OpenSky
-        run: |
-          python - <<'PY'
-          import urllib.request
+      - name: Download repository
+        uses: actions/checkout@v4
 
-          url = "https://opensky-network.org/api/states/all"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
 
-          print("Connexion à OpenSky...")
+      - name: Install dependencies
+        run: pip install pandas requests boto3
 
-          try:
-              with urllib.request.urlopen(url, timeout=20) as response:
-                  print("HTTP status:", response.status)
-                  print("OpenSky accessible depuis GitHub Actions !")
-          except Exception as e:
-              print("ERREUR:", repr(e))
-              raise
-          PY
+      - name: Run pipeline
+        env:
+          OPENSKY_CLIENT_ID: ${{ secrets.OPENSKY_CLIENT_ID }}
+          OPENSKY_CLIENT_SECRET: ${{ secrets.OPENSKY_CLIENT_SECRET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: eu-west-3
+        run: python src/extract_opensky.py
