@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: current_aircraft
+    columns:
+      - name: icao24
+        tests:
+          - not_null
+          - unique
+
+      - name: snapshot_time
+        tests:
+          - not_null
+
+      - name: latitude
+        tests:
+          - not_null
+
+      - name: longitude
+        tests:
+          - not_null
