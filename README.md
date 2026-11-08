@@ -24,6 +24,23 @@ The Power BI dashboard allows users to visualize:
 
 The displayed data comes from the latest available snapshot in Snowflake.
 
+
+
+### Tableau Bi Dashboard
+
+As an additional data visualization exercise, I used Tableau to explore a snapshot of the OpenSky dataset.
+
+The dashboard includes:
+- **Key metrics:** total aircraft, average speed, and suspicious aircraft.
+- **Aircraft density map:** visualization of air traffic concentration around the world.
+- **Altitude distribution:** number of aircraft by altitude range.
+- **Anomaly analysis:** scatter plot comparing aircraft speed and altitude, with reference lines highlighting unusual values.
+
+![Tableau Dashboard](assets/Tableau_Dashboard.png)
+
+*Data snapshot: October 15, 2026, at 13:38:35 UTC.*
+
+
 ## 3. Pipeline Architecture
 
 ![Pipeline Architecture](assets/screen_pipeline_schema.png)
